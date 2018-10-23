@@ -21,6 +21,11 @@ def load_data(in_file):
     return en, cn
 
 def build_dict(sentences, max_words=50000):
+    """
+    :param sentences: [[tokens, tokens, ...], ]
+    :param max_words:
+    :return: {word:cnt, ...}, int
+    """
     word_count = Counter()
     for sentence in sentences:
         for s in sentence:
@@ -57,6 +62,12 @@ def encode(en_sentences, cn_sentences, en_dict, cn_dict, sort_by_len=True):
     return out_en_sentences, out_cn_sentences
 
 def get_minibatches(n, minibatch_size, shuffle=False):
+    """
+    :param n: 总样本数
+    :param minibatch_size:
+    :param shuffle:
+    :return: [[idx, idx, ...], ...] 句子下标
+    """
     idx_list = np.arange(0, n, minibatch_size)
     if shuffle:
         np.random.shuffle(idx_list)
@@ -66,6 +77,11 @@ def get_minibatches(n, minibatch_size, shuffle=False):
     return minibatches
 
 def prepare_data(seqs):
+    """
+    :param seqs: [[id, id, ], ...]
+    :return: [[idx, len 0 0 ], ...], [[idx, len 1 1 ], ...] 二维，句子下标及句子长度token编号，不足最长补0， 未补0位mask为1
+    """
+    # 各子句样本长度，选取最大长度作为max_len
     lengths = [len(seq) for seq in seqs]
     n_samples = len(seqs)
     max_len = np.max(lengths)
@@ -78,9 +94,16 @@ def prepare_data(seqs):
     return x, x_mask
 
 def gen_examples(en_sentences, cn_sentences, batch_size):
+    """
+    :param en_sentences: [[id, id, ...], ...]
+    :param cn_sentences: [[id, id, ...], ...]
+    :param batch_size:
+    :return: [(mb_x, mb_x_mask, mb_y, mb_y_mask), ...]
+    """
     minibatches = get_minibatches(len(en_sentences), batch_size)
     all_ex = []
     for minibatch in minibatches:
+        # [[id, id, ...], [id, id, ...], ]
         mb_en_sentences = [en_sentences[t] for t in minibatch]
         mb_cn_sentences = [cn_sentences[t] for t in minibatch]
         mb_x, mb_x_mask = prepare_data(mb_en_sentences)

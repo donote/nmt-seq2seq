@@ -28,6 +28,7 @@ def eval(model, data, args, crit):
 		mb_x = Variable(torch.from_numpy(mb_x), volatile=True).long()
 		mb_x_mask = Variable(torch.from_numpy(mb_x_mask), volatile=True).long()
 		hidden = model.init_hidden(batch_size)
+		# target input: 结束符不要，target output：开始符不用
 		mb_input = Variable(torch.from_numpy(mb_y[:,:-1]), volatile=True).long()
 		mb_out = Variable(torch.from_numpy(mb_y[:, 1:]), volatile=True).long()
 		mb_out_mask = Variable(torch.from_numpy(mb_y_mask[:, 1:]), volatile=True)
@@ -39,7 +40,8 @@ def eval(model, data, args, crit):
 			mb_out_mask = mb_out_mask.cuda()
 		
 		mb_pred, hidden = model(mb_x, mb_x_mask, mb_input, hidden)
-		num_words = torch.sum(mb_out_mask).data[0]
+		#num_words = torch.sum(mb_out_mask).data[0]
+		num_words = torch.sum(mb_out_mask).item()
 		loss += crit(mb_pred, mb_out, mb_out_mask).data[0] * num_words
 
 		total_num_words += num_words
@@ -47,10 +49,14 @@ def eval(model, data, args, crit):
 
 		mb_pred = torch.max(mb_pred.view(mb_pred.size(0) * mb_pred.size(1), mb_pred.size(2)), 1)[1]
 		# code.interact(local=locals())
-		correct = (mb_pred == mb_out).float()
-
+		#correct = (mb_pred == mb_out).float()
+		correct = (mb_pred == mb_out.view(-1)).float()
+		#import pdb;	pdb.set_trace()
 		correct_count += torch.sum(correct * mb_out_mask.contiguous().view(mb_out_mask.size(0) * mb_out_mask.size(1), 1)).data[0]
 	return correct_count, loss, total_num_words
+
+
+#import pdb; pdb.set_trace()
 
 def main(args):
 
@@ -74,7 +80,7 @@ def main(args):
 	inv_en_dict = {v: k for k, v in en_dict.items()}
 	inv_cn_dict = {v: k for k, v in cn_dict.items()}
 
-	# encode train and dev sentences into indieces
+	# encode train and dev sentences into indiecesn, 用编号表示
 	train_en, train_cn = utils.encode(train_en, train_cn, en_dict, cn_dict)
 	# convert to numpy tensors
 	train_data = utils.gen_examples(train_en, train_cn, args.batch_size)

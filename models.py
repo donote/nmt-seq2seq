@@ -41,10 +41,11 @@ class EncoderDecoderModel(nn.Module):
             hidden = self.encoder(x_embedded[:,i,:], hidden)
             hiddens.append(hidden[0].unsqueeze(1))
             cells.append(hidden[1].unsqueeze(1))
-        
+
+        # 每个t时刻的hidden、cell结果
         hiddens = torch.cat(hiddens, 1)
         cells = torch.cat(cells, 1)
-        x_lengths = x_mask.sum(1).unsqueeze(2).expand(B, 1, embedding_size)-1
+        x_lengths = x_mask.sum(1).unsqueeze(1).unsqueeze(2).expand(B, 1, embedding_size)-1
         h = hiddens.gather(1, x_lengths).permute(1,0,2)
         c = cells.gather(1, x_lengths).permute(1,0,2)
 
@@ -57,7 +58,7 @@ class EncoderDecoderModel(nn.Module):
         hiddens = hiddens.contiguous()
         # output layer
         decoded = self.linear(hiddens.view(hiddens.size(0)*hiddens.size(1), hiddens.size(2)))
-        decoded = F.log_softmax(decoded)
+        decoded = F.log_softmax(decoded, dim=1)
         return decoded.view(hiddens.size(0), hiddens.size(1), decoded.size(1)), hiddens
 
     def translate(self, x, x_mask, y, hidden, max_length = 20):

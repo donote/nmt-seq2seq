@@ -1,3 +1,9 @@
+#!/bin/env python
+#! encoding=utf-8
+"""
+对cmn进行数据切分，train:test:dev = 8:1:1
+using: python train_test_split.py
+"""
 
 from sklearn.model_selection import train_test_split
 

@@ -1,6 +1,7 @@
 # [Sequence to sequence model for neural machine translation](https://github.com/ZeweiChu/nmt-seq2seq)
 
 ### requirements: 
+- pytorch 0.3.1
 - python 3.6
 - pytorch 
 - nltk

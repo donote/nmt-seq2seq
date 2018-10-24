@@ -38,7 +38,8 @@ def eval(model, data, args, crit):
 			mb_input = mb_input.cuda()
 			mb_out = mb_out.cuda()
 			mb_out_mask = mb_out_mask.cuda()
-		
+
+		#import pdb;		pdb.set_trace()
 		mb_pred, hidden = model(mb_x, mb_x_mask, mb_input, hidden)
 		#num_words = torch.sum(mb_out_mask).data[0]
 		num_words = torch.sum(mb_out_mask).item()
@@ -51,12 +52,9 @@ def eval(model, data, args, crit):
 		# code.interact(local=locals())
 		#correct = (mb_pred == mb_out).float()
 		correct = (mb_pred == mb_out.view(-1)).float()
-		#import pdb;	pdb.set_trace()
 		correct_count += torch.sum(correct * mb_out_mask.contiguous().view(mb_out_mask.size(0) * mb_out_mask.size(1), 1)).data[0]
 	return correct_count, loss, total_num_words
 
-
-#import pdb; pdb.set_trace()
 
 def main(args):
 

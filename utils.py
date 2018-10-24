@@ -118,6 +118,9 @@ def to_contiguous(tensor):
         return tensor.contiguous()
 
 class LanguageModelCriterion(nn.Module):
+    """
+    what's the formula?
+    """
     def __init__(self):
         super(LanguageModelCriterion, self).__init__()
 

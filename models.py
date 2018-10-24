@@ -74,7 +74,7 @@ class EncoderDecoderModel(nn.Module):
         
         hiddens = torch.cat(hiddens, 1)
         cells = torch.cat(cells, 1)
-        x_lengths = x_mask.sum(1).unsqueeze(2).expand(B, 1, embedding_size)-1
+        x_lengths = x_mask.sum(1).unsqueeze(1).unsqueeze(2).expand(B, 1, embedding_size)-1
         h = hiddens.gather(1, x_lengths).permute(1,0,2)
         c = cells.gather(1, x_lengths).permute(1,0,2)
 

@@ -82,6 +82,7 @@ class EncoderDecoderModel(nn.Module):
         for i in range(max_length-1):
             # code.interact(local=locals())
             y_embedded = self.embed_cn(y)
+
             hiddens, (h, c) = self.decoder(y_embedded, hx=(h, c))
             hiddens = hiddens.contiguous()
             # output layer
@@ -89,6 +90,7 @@ class EncoderDecoderModel(nn.Module):
             decoded = F.log_softmax(decoded)
             decoded = decoded.view(hiddens.size(0), decoded.size(1))
             y = torch.max(decoded, 1)[1]
+            y = y.unsqueeze(1)
             pred.append(y)
         return torch.cat(pred, 1)
 

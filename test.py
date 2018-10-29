@@ -41,7 +41,7 @@ def translate(model, data, en_dict, inv_en_dict, cn_dict, inv_cn_dict):
 			print(en)
 			cn = ""
 			for j in range(1, args.translation_max_length):
-				word = inv_cn_dict[pred_y.data[i][j]]
+				word = inv_cn_dict[int(pred_y.data[i][j])]
 				if word == "EOS":
 					break
 				cn += word

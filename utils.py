@@ -132,7 +132,3 @@ class LanguageModelCriterion(nn.Module):
         output = torch.sum(output) / torch.sum(mask)
 
         return output
-
-
-
-        

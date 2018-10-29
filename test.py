@@ -80,10 +80,11 @@ def eval(model, data, args, crit):
 		loss += crit(mb_pred, mb_out, mb_out_mask).data[0] * num_words
 
 		total_num_words += num_words
-		
+
 
 		mb_pred = torch.max(mb_pred.view(mb_pred.size(0) * mb_pred.size(1), mb_pred.size(2)), 1)[1]
 		# code.interact(local=locals())
+		mb_out = mb_out.view(1, -1).squeeze()
 		correct = (mb_pred == mb_out).float()
 
 		correct_count += torch.sum(correct * mb_out_mask.contiguous().view(mb_out_mask.size(0) * mb_out_mask.size(1), 1)).data[0]
